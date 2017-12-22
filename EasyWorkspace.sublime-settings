@@ -1,0 +1,63 @@
+{
+    // all easy workspaces are saved under the same directory
+    // the directory where these files are saved is below
+    //
+    // when saving an easy workspace, the user can prepend a directory
+    // which will automatically be created in the below
+    //
+    // directory where easy workspaces are saved
+    "easy_ws_save_directory" : "EasyWorkspace-workspaces",
+
+    // easy workspace default file extension
+    "easy_ws_file_extension" : ".ws",
+
+    // =========================================================================
+
+    // load a view's visible region from workspace?
+    "easy_ws_read_view_region" : true,
+
+    // load a view's selected text from workspace?
+    "easy_ws_read_view_selection" : false,
+
+    // =========================================================================
+
+    // determines if EasyWorkspace will prompt to save the currently opened workspace
+    // if some significant workspaces changing commands are issued
+    //
+    // for instance, if a user decides to close all current views, EasyWorkspace
+    // can prompt to save the currently opened workspace
+    //
+    // designates if EasyWorkspace should try to save the current workspace when
+    // the workspace is significantly changed or closed
+    "easy_ws_save_on" : true,
+
+    // the save_on settings below determine if EasyWorkspace will try to save the
+    // currently opened workspace when user instigates some specific action which
+    // would siginifcantly modify the workspace
+    //
+    // for example, easy_ws_save_on_close_folders designates if EasyWorkspace
+    // should prompt to save when the user closes all opened folders
+    //
+    // all these settings are ignored if easy_ws_save_on is set to false
+
+    // prompt save when all folders are closed
+    "easy_ws_save_on_close_folders" : true,
+
+    // prompt save when project is closed
+    "easy_ws_save_on_close_project" : true,
+
+    // prompt save when new project is opened
+    "easy_ws_save_on_open_project" : true,
+
+    // prompt save when project is changed
+    "easy_ws_save_on_switch_project" : true,
+
+    // prompt save when project is changed
+    "easy_ws_save_on_select_project" : true,
+
+    // prompt save when all views are closed
+    "easy_ws_save_on_close_all" : true,
+
+    // prompt save when window is closed
+    "easy_ws_save_on_close_window" : true
+}

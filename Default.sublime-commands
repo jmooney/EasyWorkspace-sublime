@@ -1,0 +1,25 @@
+[
+    // open easy workspace
+    {
+        "caption": "EasyWorkspace: Open Workspace",
+        "command": "open_easy_workspace"
+    },
+
+    // save easy workspace
+    {
+        "caption": "EasyWorkspace: Save Workspace",
+        "command": "save_easy_workspace"
+    },
+
+    // save as easy workspace
+    {
+        "caption": "EasyWorkspace: Save Workspace As",
+        "command": "save_as_easy_workspace"
+    },
+
+    // delete easy workspace
+    {
+        "caption": "EasyWorkspace: Delete Workspace",
+        "command": "delete_easy_workspace"
+    }
+]
