@@ -1,0 +1,82 @@
+[
+    {
+        "id": "tools",
+        "children": [
+            {
+                "id": "packages",
+                "children": [
+                    {
+                        "id": "easyws_commands",
+                        "caption": "EasyWorkspace",
+                        "children": [
+                            {
+                                "caption": "Open",
+                                "command": "open_easy_workspace"
+                            },
+                            {
+                                "caption": "Save",
+                                "command": "save_easy_workspace",
+                            },
+                            {
+                                "caption": "Save As",
+                                "command": "save_as_easy_workspace"
+                            },
+                            {
+                                "caption": "Delete",
+                                "command": "delete_easy_workspace"
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "id": "preferences",
+        "children" : [
+            {
+                "id": "package-settings",
+                "children": [
+                    {
+                        "id": "easyws_settings",
+                        "caption": "EasyWorkspace",
+                        "children": [
+                            {
+                                "id": "easyws_default_settings",
+                                "caption": "Settings - Default",
+                                "command": "open_file", "args":
+                                {
+                                    "file": "${packages}/EasyWorkspace/EasyWorkspace.sublime-settings"
+                                }
+                            },
+                            {
+                                "id": "easyws_user_settings",
+                                "caption": "Settings - User",
+                                "command": "open_file", "args":
+                                {
+                                    "file": "${packages}/User/EasyWorkspace.sublime-settings"
+                                }
+                            },
+                            {
+                                "id": "easyws_default_keymap",
+                                "caption": "Key Bindings - Default",
+                                "command": "open_file", "args":
+                                {
+                                    "file": "${packages}/EasyWorkspace/Default.sublime-keymap"
+                                }
+                            },
+                            {
+                                "id": "easyws_user_keymap",
+                                "caption": "Key Bindings - User",
+                                "command": "open_file", "args":
+                                {
+                                    "file": "${packages}/User/Default.sublime-keymap"
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }
+        ]
+    }
+]
