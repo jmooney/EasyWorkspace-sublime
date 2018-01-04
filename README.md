@@ -15,6 +15,9 @@ Requirements
 Installing
 ----------
 ### With Package Control
+
+Not Available Yet, but Coming Soon!
+
 1. Install [Package Control](https://packagecontrol.io/installation)
 2. Run "Package Control: Install Package" command
 3. Find and install the 'EasyWorkspace' plugin
