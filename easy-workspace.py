@@ -253,13 +253,13 @@ class EasyWorkspaceCommand:
             del self.openWorkspaceFiles[wid]
 
 
-    def __getWorkspacesDir(self):
+    ############################################################################
+
+    def getWorkspacesDir(self):
         """ returns the EasyWorkspace workspaces directory from settings """
         settings = sublime.load_settings("EasyWorkspace.sublime-settings")
         wsFolder = settings.get("easy_ws_save_directory", "EasyWorkspace/workspaces")
         return os.path.join(sublime.packages_path(), wsFolder + os.path.sep)
-
-    ############################################################################
 
     def getWorkspaceFilepath(self, filename):
         """ Resolves a filename into its full easyworkspace path,
@@ -270,7 +270,7 @@ class EasyWorkspaceCommand:
         """
         settings = sublime.load_settings("EasyWorkspace.sublime-settings")
 
-        workspacesDir = self.__getWorkspacesDir()
+        workspacesDir = self.getWorkspacesDir()
         baseName, extension = os.path.splitext(filename)
         if not extension:
             extension = settings.get('easy_ws_file_extension', '.ws')
@@ -278,7 +278,7 @@ class EasyWorkspaceCommand:
 
     def getAllWorkspaceFiles(self):
         """ returns a list of all easy workspace files """
-        workspacesDir  = self.__getWorkspacesDir()
+        workspacesDir  = self.getWorkspacesDir()
         workspaceFiles = []
         for root, dirs, files in os.walk(workspacesDir):
             for file in files:
@@ -470,6 +470,26 @@ class DeleteEasyWorkspaceCommand(EasyWorkspaceCommand, sublime_plugin.WindowComm
         # display list to user
         self.window.status_message("Deleting workspace...")
         self.window.show_quick_panel(workspaceFiles, onWorkspaceFileSelected)
+
+
+################################################################################
+
+class ShowOpenedEasyWorkspaceCommand(EasyWorkspaceCommand, sublime_plugin.WindowCommand):
+    """ A sublime window command which shows the user this window's current opened workspace """
+
+    def run(self, **kwargs):
+        """ Show the opened easy workspace """
+        super().run(**kwargs)
+
+        # get open workspace files relative to workspaces directory
+        openWorkspaces = {k:v.replace(self.getWorkspacesDir(), "") for k,v in self.openWorkspaceFiles.items()}
+
+        # prepend an "*" to our window's open workspace if applicable
+        if self.window.id() in openWorkspaces:
+            openWorkspaces[self.window.id()] = " * " + openWorkspaces[self.window.id()]
+
+        # show the open workspaces
+        self.window.show_quick_panel(list(openWorkspaces.values()), None)
 
 
 ################################################################################

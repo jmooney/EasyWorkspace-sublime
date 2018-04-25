@@ -24,6 +24,10 @@
                             {
                                 "caption": "Delete",
                                 "command": "delete_easy_workspace"
+                            },
+                            {
+                                "caption": "Show Opened",
+                                "command": "show_opened_easy_workspace"
                             }
                         ]
                     }
