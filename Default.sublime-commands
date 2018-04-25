@@ -21,5 +21,11 @@
     {
         "caption": "EasyWorkspace: Delete Workspace",
         "command": "delete_easy_workspace"
+    },
+
+    // show open easy workspace
+    {
+        "caption": "EasyWorkspace: Show Current Workspace",
+        "command": "show_current_easy_workspace"
     }
 ]
