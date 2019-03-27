@@ -26,6 +26,10 @@
                                 "command": "delete_easy_workspace"
                             },
                             {
+                                "caption": "Reopen Last Workspace",
+                                "command": "reopen_last_easy_workspace"
+                            },
+                            {
                                 "caption": "Show Opened",
                                 "command": "show_opened_easy_workspace"
                             }

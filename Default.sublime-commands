@@ -27,5 +27,11 @@
     {
         "caption": "EasyWorkspace: Show Opened Workspaces",
         "command": "show_opened_easy_workspace"
+    },
+
+    // reopen last easy workspace
+    {
+        "caption": "EasyWorkspace: Reopen Last Workspace",
+        "command": "reopen_last_easy_workspace"
     }
 ]

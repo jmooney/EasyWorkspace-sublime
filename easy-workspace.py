@@ -46,6 +46,8 @@ class EasyWorkspace:
         self.active  = ()
         self.groups  = []
 
+        self.filename = ""
+
     ############################################################################
     # File IO
 
@@ -65,10 +67,10 @@ class EasyWorkspace:
 
         # write the file
         with open(filename, 'w') as f:
-            self.file = filename
-
             wsJSON = sublime.encode_value(vars(self), True)
             f.write(wsJSON)
+
+            self.filename = filename
 
 
     def loadFromFile(self, filename):
@@ -126,7 +128,9 @@ class EasyWorkspace:
                 view['visible']   = (sView.visible_region().a, sView.visible_region().b)
                 view['selection'] = (sView.sel()[0].a, sView.sel()[0].b)
 
-                group['views'].append(view)
+                fileExistsOnDisk = view['file'] != None
+                if fileExistsOnDisk:
+                    group['views'].append(view)
 
             self.groups.append(group)
 
@@ -237,7 +241,10 @@ class EasyWorkspaceCommand:
 
     # shared dictionary which stores the currently open workspace file for each
     # open window in sublime
-    openWorkspaceFiles = dict()
+    _openWorkspaceFiles = dict()
+
+    # store the last workspace to reopen as needed
+    _reopenWorkspace = ""
 
     def run(self, **kwargs):
         """ runs a command and garbage collects openWorkspaceFiles """
@@ -248,9 +255,9 @@ class EasyWorkspaceCommand:
     def __garbageCollectOpenWorkspaceFiles(self):
         """ removes all closed window ids from our shared state data """
         openIds    = [window.id() for window in sublime.windows()]
-        invalidIds = [wid for wid in self.openWorkspaceFiles if wid not in openIds]
+        invalidIds = [wid for wid in self._openWorkspaceFiles if wid not in openIds]
         for wid in invalidIds:
-            del self.openWorkspaceFiles[wid]
+            del self._openWorkspaceFiles[wid]
 
 
     ############################################################################
@@ -288,7 +295,6 @@ class EasyWorkspaceCommand:
 
         return workspaceFiles
 
-
 ################################################################################
 
 class SaveEasyWorkspaceCommand(EasyWorkspaceCommand, sublime_plugin.WindowCommand):
@@ -305,7 +311,7 @@ class SaveEasyWorkspaceCommand(EasyWorkspaceCommand, sublime_plugin.WindowComman
         super().run(**kwargs)
 
         # are we saving a new workspace?
-        isNewWorkspace = self.window.id() not in self.openWorkspaceFiles
+        isNewWorkspace = self.window.id() not in EasyWorkspaceCommand._openWorkspaceFiles
         noFileProvided = kwargs.get('filename', None) == None
 
         if isNewWorkspace and noFileProvided:
@@ -319,7 +325,7 @@ class SaveEasyWorkspaceCommand(EasyWorkspaceCommand, sublime_plugin.WindowComman
             ws.buildFromWindow(self.window)
 
             # resolve the full filepath
-            fullFilePath = self.getWorkspaceFilepath(kwargs.get('filename', self.openWorkspaceFiles.get(self.window.id())))
+            fullFilePath = self.getWorkspaceFilepath(kwargs.get('filename', EasyWorkspaceCommand._openWorkspaceFiles.get(self.window.id())))
 
             # prompt for overwrite or create new
             doSaveDialogResult = sublime.DIALOG_YES
@@ -333,7 +339,7 @@ class SaveEasyWorkspaceCommand(EasyWorkspaceCommand, sublime_plugin.WindowComman
                 self.window.status_message("Canceled")
             else:
                 ws.saveToFile(fullFilePath)
-                self.openWorkspaceFiles[self.window.id()] = fullFilePath
+                EasyWorkspaceCommand._openWorkspaceFiles[self.window.id()] = fullFilePath
                 self.window.status_message("Saved " + fullFilePath)
 
 
@@ -411,7 +417,7 @@ class OpenEasyWorkspaceCommand(EasyWorkspaceCommand, sublime_plugin.WindowComman
         ws.loadFromFile(fullFilePath)
         ws.applyToWindow(targetWindow)
 
-        self.openWorkspaceFiles[targetWindow.id()] = fullFilePath
+        EasyWorkspaceCommand._openWorkspaceFiles[targetWindow.id()] = fullFilePath
 
         sublime.status_message("Opened {}".format(fullFilePath))
 
@@ -450,7 +456,7 @@ class DeleteEasyWorkspaceCommand(EasyWorkspaceCommand, sublime_plugin.WindowComm
         """ Delete an easy workspace """
         super().run(**kwargs)
 
-        # get list of all saves workspaces
+        # get list of all saved workspaces
         workspaceFiles = self.getAllWorkspaceFiles()
 
         def onWorkspaceFileSelected(index):
@@ -482,7 +488,7 @@ class ShowOpenedEasyWorkspaceCommand(EasyWorkspaceCommand, sublime_plugin.Window
         super().run(**kwargs)
 
         # get open workspace files relative to workspaces directory
-        openWorkspaces = {k:v.replace(self.getWorkspacesDir(), "") for k,v in self.openWorkspaceFiles.items()}
+        openWorkspaces = {k:v.replace(self.getWorkspacesDir(), "") for k,v in EasyWorkspaceCommand._openWorkspaceFiles.items()}
 
         # prepend an "*" to our window's open workspace if applicable
         if self.window.id() in openWorkspaces:
@@ -491,6 +497,19 @@ class ShowOpenedEasyWorkspaceCommand(EasyWorkspaceCommand, sublime_plugin.Window
         # show the open workspaces
         self.window.show_quick_panel(list(openWorkspaces.values()), None)
 
+################################################################################
+
+class ReopenLastEasyWorkspaceCommand(EasyWorkspaceCommand, sublime_plugin.WindowCommand):
+    """ A sublime window command which reopens the last easy workspace """
+
+    def run(self, **kwargs):
+        """ Reopen the last easy workspace """
+        super().run(**kwargs)
+
+        if EasyWorkspaceCommand._reopenWorkspace and os.path.isfile(EasyWorkspaceCommand._reopenWorkspace):
+            self.window.run_command("open_easy_workspace", dict(filename=EasyWorkspaceCommand._reopenWorkspace))
+        else:
+            self.window.status_message("Unable to Reopen Workspace " + EasyWorkspaceCommand._reopenWorkspace)
 
 ################################################################################
 # Plugin Listeners
@@ -504,7 +523,7 @@ class AutoSaveEasyWorkspace(EasyWorkspaceCommand, sublime_plugin.EventListener):
         settings = sublime.load_settings("EasyWorkspace.sublime-settings")
 
         # should we autosave?
-        usingEasyWs = window.id() in self.openWorkspaceFiles
+        usingEasyWs = window.id() in EasyWorkspaceCommand._openWorkspaceFiles
         saveEnabled = settings.get('easy_ws_save_on', False)
         if not (usingEasyWs and saveEnabled):
             return
@@ -514,25 +533,19 @@ class AutoSaveEasyWorkspace(EasyWorkspaceCommand, sublime_plugin.EventListener):
         # the following lists highlight these commands, and are ordered for easy
         # comparison of command-setting
         #
-        commandsThatTriggerAutoSave = ["close_folder_list", "close_project",
-                                        "prompt_open_project_or_workspace",
-                                        "prompt_switch_project_or_workspace",
-                                        "prompt_select_workspace",
-                                        "close_all", "close_window"]
+        # these commands are considered to 'close' the workspace, and will also
+        # store the current workspace to be reopened via the OpenLastWorkspace command
+        #
+        commandsThatCloseWorkspace = ["close_folder_list", "close_project",
+                                      "prompt_open_project_or_workspace",
+                                      "prompt_switch_project_or_workspace",
+                                      "prompt_select_workspace",
+                                      "close_all", "close_window"]
 
-        autoSaveSettings = ["easy_ws_save_on_close_folders", "easy_ws_save_on_close_project",
-                            "easy_ws_save_on_open_project", "easy_ws_save_on_switch_project",
-                            "easy_ws_save_on_select_project",
-                            "easy_ws_save_on_close_all", "easy_ws_save_on_close_window"]
+        if command_name in commandsThatCloseWorkspace:
+            EasyWorkspaceCommand._reopenWorkspace = EasyWorkspaceCommand._openWorkspaceFiles[window.id()]
 
-        # ensure there isn't programmer error
-        assert(len(commandsThatTriggerAutoSave) == len(autoSaveSettings))
-
-        # should we autosave?
-        doSave = False
-        for i, cmd in enumerate(commandsThatTriggerAutoSave):
-            if command_name == cmd and settings.get(autoSaveSettings[i], False):
-                doSave = True
-
-        if doSave:
-            result = window.run_command("save_easy_workspace", dict(promptOverwrite=True, promptSave=True))
+            # Are autosave settings enabled for this command?
+            autosaveSettingName = "easy_ws_save_on_" + command_name
+            if settings.get(autosaveSettingName, False):
+                result = window.run_command("save_easy_workspace", dict(promptOverwrite=True, promptSave=True))
