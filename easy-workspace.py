@@ -127,6 +127,7 @@ class EasyWorkspace:
                 view['file']      = sView.file_name()
                 view['visible']   = (sView.visible_region().a, sView.visible_region().b)
                 view['selection'] = (sView.sel()[0].a, sView.sel()[0].b)
+                view['read_only'] = sView.is_read_only()
 
                 fileExistsOnDisk = view['file'] != None
                 if fileExistsOnDisk:
@@ -165,7 +166,8 @@ class EasyWorkspace:
                 # and ready to have 'visible'/'selection' modified
                 time.sleep(0.05)
 
-                # set view region and selection
+                # set view attributes, region and selection
+                sView.set_read_only(view.get('read_only', False))
 
                 # when setting the visible region, we want the top of the
                 # view to match saved workspace. We achieve this by showing
