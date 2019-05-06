@@ -113,15 +113,18 @@ class EasyWorkspace:
             sViews      = window.views_in_group(i)
             activeSView = window.active_view_in_group(i)
 
-            # ensure we have
-
             # create the group
             group = dict()
             group['active'] = sViews.index(activeSView) if sViews else 0
             group['views']  = []
 
             # fill with views
-            for sView in window.views_in_group(i):
+            for sView in sViews:
+                # ignore any temporary or unsaved views
+                fileExistsOnDisk = sView.file_name()
+                if not fileExistsOnDisk:
+                    continue
+
                 view = dict()
 
                 view['file']      = sView.file_name()
@@ -129,9 +132,7 @@ class EasyWorkspace:
                 view['selection'] = (sView.sel()[0].a, sView.sel()[0].b)
                 view['read_only'] = sView.is_read_only()
 
-                fileExistsOnDisk = view['file'] != None
-                if fileExistsOnDisk:
-                    group['views'].append(view)
+                group['views'].append(view)
 
             self.groups.append(group)
 
