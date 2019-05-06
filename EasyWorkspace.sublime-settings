@@ -41,19 +41,19 @@
     // all these settings are ignored if easy_ws_save_on is set to false
 
     // prompt save when all folders are closed
-    "easy_ws_save_on_close_folders" : true,
+    "easy_ws_save_on_close_folder_list" : true,
 
     // prompt save when project is closed
     "easy_ws_save_on_close_project" : true,
 
     // prompt save when new project is opened
-    "easy_ws_save_on_open_project" : true,
+    "easy_ws_save_on_open_project_or_workspace" : true,
 
     // prompt save when project is changed
-    "easy_ws_save_on_switch_project" : true,
+    "easy_ws_save_on_switch_project_or_workspace" : true,
 
-    // prompt save when project is changed
-    "easy_ws_save_on_select_project" : true,
+    // prompt save when sublime workspace is changed
+    "easy_ws_save_on_select_workspace" : true,
 
     // prompt save when all views are closed
     "easy_ws_save_on_close_all" : true,

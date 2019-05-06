@@ -15,9 +15,6 @@ Requirements
 Installing
 ----------
 ### With Package Control
-
-Not Available Yet, but Coming Soon!
-
 1. Install [Package Control](https://packagecontrol.io/installation)
 2. Run "Package Control: Install Package" command
 3. Find and install the 'EasyWorkspace' plugin
@@ -49,10 +46,12 @@ Tools->Packages->EasyWorkspace
 Commands
 --------
 
-    OpenEasyWorkspace   | Opens an existing easy workspace
-    SaveEasyWorkspace   | Saves open files and folders to an easy workspace file
-    SaveAsEasyWorkspace | Saves open files and folders to a specified easy workspace file
-    DeleteEasyWorkspace | Delete an existing easy workspace
+    OpenEasyWorkspace        | Opens an existing easy workspace
+    SaveEasyWorkspace        | Saves open files and folders to an easy workspace file
+    SaveAsEasyWorkspace      | Saves open files and folders to a specified easy workspace file
+    DeleteEasyWorkspace      | Delete an existing easy workspace
+    ReopenLastEasyWorkspace  | Reopens the most recently closed workspace
+    ShowOpenedEasyWorkspace  | Shows the currently opened workspaces
 
 Git Integration
 ---------------
