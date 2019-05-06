@@ -292,6 +292,10 @@ class EasyWorkspaceCommand:
         workspaceFiles = []
         for root, dirs, files in os.walk(workspacesDir):
             for file in files:
+                # ignore any hidden files
+                if file.startswith('.'):
+                    continue
+
                 # trim base workspace directory for display
                 subdir = root[len(workspacesDir):]
                 workspaceFiles.append(os.path.join(subdir, file))
